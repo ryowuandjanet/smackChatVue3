@@ -16,7 +16,8 @@ export default defineConfig((ctx) => {
       'i18n',
       'axios',
       'firebase',
-      'pinia'
+      'pinia',
+      'auth'
     ],
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-file#css
