@@ -108,6 +108,7 @@
 import { ref, reactive, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
+import { useAuthStore } from 'stores/auth'
 
 // Props 定義
 const props = defineProps({
@@ -118,7 +119,8 @@ const props = defineProps({
   }
 })
 
-// Quasar 實例
+// Store 和其他實例
+const authStore = useAuthStore()
 const $q = useQuasar()
 const router = useRouter()
 
@@ -192,6 +194,31 @@ const resetForm = () => {
   }
 }
 
+// 處理登入
+const handleLogin = async () => {
+  try {
+    await authStore.login(formData.email, formData.password)
+    return true
+  } catch (error) {
+    throw new Error(error.message)
+  }
+}
+
+// 處理註冊
+const handleRegister = async () => {
+  try {
+    // 密碼確認檢查
+    if (formData.password !== formData.confirmPassword) {
+      throw new Error('密碼不匹配')
+    }
+
+    await authStore.register(formData.email, formData.password, formData.name)
+    return true
+  } catch (error) {
+    throw new Error(error.message)
+  }
+}
+
 // 表單提交處理
 const onSubmit = async () => {
   try {
@@ -224,39 +251,6 @@ const onSubmit = async () => {
   } finally {
     loading.value = false
   }
-}
-
-// 處理登入
-const handleLogin = async () => {
-  // 模擬 API 調用
-  await new Promise((resolve, reject) => {
-    setTimeout(() => {
-      if (formData.email === 'test@test.com' && formData.password === 'test123') {
-        resolve()
-      } else {
-        reject(new Error('帳號或密碼錯誤'))
-      }
-    }, 1000)
-  })
-}
-
-// 處理註冊
-const handleRegister = async () => {
-  // 密碼確認檢查
-  if (formData.password !== formData.confirmPassword) {
-    throw new Error('密碼不匹配')
-  }
-
-  // 模擬 API 調用
-  await new Promise((resolve, reject) => {
-    setTimeout(() => {
-      if (formData.email === 'test@test.com') {
-        reject(new Error('此電子郵件已被註冊'))
-      } else {
-        resolve()
-      }
-    }, 1000)
-  })
 }
 </script>
 
