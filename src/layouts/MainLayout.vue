@@ -2,9 +2,26 @@
   <q-layout view="lHh Lpr lFf">
     <q-header elevated>
       <q-toolbar>
+        <q-btn
+          v-if="isChatPage"
+          @click="goBack"
+          flat
+          dense
+          icon="arrow_back"
+          label="Back"
+        />
         <q-toolbar-title class="absolute-center">
           {{ title }}
         </q-toolbar-title>
+        <q-btn
+          to="/auth"
+          class="absolute-right q-pr-sm"
+          icon="account_circle"
+          flat
+          dense
+          no-caps
+          label="Login"
+        />
       </q-toolbar>
     </q-header>
 
@@ -16,23 +33,35 @@
 
 <script setup>
 import { computed } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 
-// 取得目前的路由
 const route = useRoute()
+const router = useRouter()
 
-// 使用 computed 計算屬性取得動態標題
+// 計算屬性：動態標題
 const title = computed(() => {
-  console.log('Current Route Object:', route)
-
-  // 確保路由資訊已正確解析
-  const currentRoute = route.path.split('/')[1]
-  console.log('Current Route Path:', route.path)
-  console.log('Current Route Segment:', currentRoute)
-
-  if (currentRoute === '') return 'SmackChat'
-  else if (currentRoute === 'chat') return 'Chat'
-  else if (currentRoute === 'auth') return 'Auth'
-  else return 'Unknown'
+  const pathSegment = route.path.split('/')[1] || ''
+  switch (pathSegment) {
+    case '':
+      return 'SmackChat'
+    case 'chat':
+      return 'Chat'
+    case 'auth':
+      return 'Auth'
+    default:
+      return 'Unknown'
+  }
 })
+
+// 判斷是否為聊天頁面
+const isChatPage = computed(() => route.path.startsWith('/chat'))
+
+// 返回上一頁
+const goBack = () => {
+  if (window.history.length > 1) {
+    router.back()
+  } else {
+    router.push('/') // 如果沒有歷史，回到首頁
+  }
+}
 </script>
